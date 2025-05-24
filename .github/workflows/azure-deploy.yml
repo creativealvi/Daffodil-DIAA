@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_WEBAPP_NAME: daffodil-ai-buddy    # Replace with your Azure Web App name
-  NODE_VERSION: '18.x'
+  NODE_VERSION: '20.x'
+  AZURE_WEBAPP_NAME: 'Diaa'
 
 jobs:
   build-and-deploy:
@@ -33,9 +33,9 @@ jobs:
     - name: Test
       run: npm test --if-present
 
-    - name: Deploy to Azure Web App
+    - name: Deploy to Azure
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: ./dist  # Vite builds to the dist directory 
+        package: ./dist 

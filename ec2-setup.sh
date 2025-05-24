@@ -15,7 +15,7 @@ mkdir -p /home/ubuntu/app
 cd /home/ubuntu/app
 
 # Clone your repository (replace with your repo URL)
-git clone YOUR_REPOSITORY_URL .
+git clone https://github.com/creativealvi/Daffodil-DIAA .
 
 # Install dependencies
 npm ci

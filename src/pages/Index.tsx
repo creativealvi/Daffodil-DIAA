@@ -59,6 +59,7 @@ const Index = () => {
   const { isAdmin, logout } = useAuthStore();
   const [isIntentionalStop, setIsIntentionalStop] = useState(false);
   const [isSpeechCanceled, setIsSpeechCanceled] = useState(false);
+  const { loadPronunciations } = usePronunciationStore();
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -75,6 +76,7 @@ const Index = () => {
   useEffect(() => {
     loadKnowledgeBase();
     loadApiKey();
+    loadPronunciations();
   }, []);
 
   const loadKnowledgeBase = async () => {

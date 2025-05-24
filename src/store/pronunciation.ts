@@ -1,15 +1,16 @@
 import { create } from 'zustand';
-import { getAllPronunciations, addPronunciation as addPronunciationToDb, updatePronunciation, removePronunciation as removePronunciationFromDb } from '@/lib/pronunciations';
+import { getAllPronunciations, addPronunciation as addPronunciationToDb, updatePronunciation as updatePronunciationInDb, removePronunciation as removePronunciationFromDb } from '@/lib/pronunciations';
 
 interface PronunciationState {
   dictionary: { [key: string]: string };
   loadPronunciations: () => Promise<void>;
   addPronunciation: (word: string, pronunciation: string) => Promise<void>;
+  updatePronunciation: (word: string, pronunciation: string) => Promise<void>;
   removePronunciation: (word: string) => Promise<void>;
   getPronunciation: (word: string) => string | null;
 }
 
-export const usePronunciationStore = create<PronunciationState>()((set, get) => ({
+const usePronunciationStore = create<PronunciationState>()((set, get) => ({
   dictionary: {},
   
   loadPronunciations: async () => {
@@ -37,6 +38,18 @@ export const usePronunciationStore = create<PronunciationState>()((set, get) => 
     }
   },
 
+  updatePronunciation: async (word: string, pronunciation: string) => {
+    try {
+      await updatePronunciationInDb(word, pronunciation);
+      set((state) => ({
+        dictionary: { ...state.dictionary, [word]: pronunciation }
+      }));
+    } catch (error) {
+      console.error('Error updating pronunciation:', error);
+      throw error;
+    }
+  },
+
   removePronunciation: async (word: string) => {
     try {
       await removePronunciationFromDb(word);
@@ -54,4 +67,6 @@ export const usePronunciationStore = create<PronunciationState>()((set, get) => 
     const dictionary = get().dictionary;
     return dictionary[word] || null;
   },
-})); 
+}));
+
+export { usePronunciationStore }; 

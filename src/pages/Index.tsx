@@ -179,11 +179,11 @@ const Index = () => {
             }
           }
 
-          // Find English voice for non-Bengali text
+          // Find English voice - specifically Microsoft Ava Online (Natural)
           const preferredVoice = voices.find(
-            voice => 
-              voice.lang.includes('en') && 
-              voice.name.toLowerCase().includes('female')
+            voice => voice.name === 'Microsoft Ava Online (Natural) - English (United States)'
+          ) || voices.find(
+            voice => voice.name.includes('Microsoft') && voice.lang.includes('en-US')
           ) || voices.find(
             voice => voice.lang.includes('en-US')
           ) || voices[0];

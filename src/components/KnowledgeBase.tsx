@@ -194,7 +194,7 @@ const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
                 {entries.map((entry) => (
                   <Card
                     key={entry.id}
-                    className={`p-2 cursor-pointer hover:bg-gray-50 ${
+                    className={`p-2 cursor-pointer hover:bg-gray-50 group ${
                       selectedEntry?.id === entry.id ? 'border-[#39b24a] bg-[#39b24a]/5' : ''
                     }`}
                     onClick={() => handleEntrySelect(entry)}
@@ -211,7 +211,7 @@ const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
                           e.stopPropagation();
                           handleDelete(entry.id);
                         }}
-                        className="text-red-500 opacity-0 group-hover:opacity-100"
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50 transition-colors"
                       >
                         <Trash className="w-4 h-4" />
                       </Button>

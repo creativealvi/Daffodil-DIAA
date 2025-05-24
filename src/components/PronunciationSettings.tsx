@@ -29,25 +29,29 @@ const PronunciationSettings: React.FC<PronunciationSettingsProps> = ({
   const [word, setWord] = useState('');
   const [pronunciation, setPronunciation] = useState('');
   const [editingEntry, setEditingEntry] = useState<EditingEntry | null>(null);
-  const { dictionary, addPronunciation, removePronunciation } = usePronunciationStore();
+  const { dictionary, addPronunciation, removePronunciation, updatePronunciation } = usePronunciationStore();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!word.trim() || !pronunciation.trim()) {
       toast.error('Please fill in both fields');
       return;
     }
-    addPronunciation(word.trim(), pronunciation.trim());
-    toast.success('Pronunciation added');
-    setWord('');
-    setPronunciation('');
+    try {
+      await addPronunciation(word.trim(), pronunciation.trim());
+      toast.success('Pronunciation added');
+      setWord('');
+      setPronunciation('');
+    } catch (error) {
+      toast.error('Failed to add pronunciation');
+    }
   };
 
   const handleEdit = (word: string, currentPronunciation: string) => {
     setEditingEntry({ word, pronunciation: currentPronunciation });
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (!editingEntry) return;
     
     if (!editingEntry.pronunciation.trim()) {
@@ -55,10 +59,14 @@ const PronunciationSettings: React.FC<PronunciationSettingsProps> = ({
       return;
     }
 
-    removePronunciation(editingEntry.word);
-    addPronunciation(editingEntry.word, editingEntry.pronunciation.trim());
-    toast.success('Pronunciation updated');
-    setEditingEntry(null);
+    try {
+      await updatePronunciation(editingEntry.word, editingEntry.pronunciation.trim());
+      toast.success('Pronunciation updated');
+      setEditingEntry(null);
+    } catch (error) {
+      console.error('Error updating pronunciation:', error);
+      toast.error('Failed to update pronunciation');
+    }
   };
 
   const handleCancelEdit = () => {
@@ -72,6 +80,16 @@ const PronunciationSettings: React.FC<PronunciationSettingsProps> = ({
       utterance.pitch = 1.0;
       utterance.volume = 1.0;
       speechSynthesis.speak(utterance);
+    }
+  };
+
+  const handleDelete = async (word: string) => {
+    try {
+      await removePronunciation(word);
+      toast.success('Pronunciation removed');
+    } catch (error) {
+      console.error('Error removing pronunciation:', error);
+      toast.error('Failed to remove pronunciation');
     }
   };
 
@@ -127,7 +145,7 @@ const PronunciationSettings: React.FC<PronunciationSettingsProps> = ({
                     {editingEntry?.word === word ? (
                       <div className="flex items-center space-x-2">
                         <span className="font-medium">{word}</span>
-                        <span className="mx-2">→</span>
+                        <span className="mx-2">&rarr;</span>
                         <Input
                           value={editingEntry.pronunciation}
                           onChange={(e) => setEditingEntry({ ...editingEntry, pronunciation: e.target.value })}
@@ -137,7 +155,7 @@ const PronunciationSettings: React.FC<PronunciationSettingsProps> = ({
                     ) : (
                       <>
                         <span className="font-medium">{word}</span>
-                        <span className="mx-2">→</span>
+                        <span className="mx-2">&rarr;</span>
                         <span className="text-gray-600">{pronunciation}</span>
                       </>
                     )}
@@ -188,10 +206,7 @@ const PronunciationSettings: React.FC<PronunciationSettingsProps> = ({
                           type="button"
                           variant="ghost"
                           size="sm"
-                          onClick={() => {
-                            removePronunciation(word);
-                            toast.success('Pronunciation removed');
-                          }}
+                          onClick={() => handleDelete(word)}
                           className="text-red-500 hover:text-red-600"
                         >
                           <Trash2 className="w-4 h-4" />
